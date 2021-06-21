@@ -1,4 +1,4 @@
-# 2021-06-23 (水) GDG Saitama LT
+# 2021-06-23 (水) GDG Cloud Saitama LT
 
 To start the slide show:
 

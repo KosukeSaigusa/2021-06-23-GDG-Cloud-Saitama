@@ -1,107 +1,81 @@
 ---
-# try also 'default' to start simple
-theme: seriph
-# random image from a curated Unsplash collection by Anthony
-# like them? see https://unsplash.com/collections/94734566/slidev
+theme: default
 background: https://source.unsplash.com/collection/94734566/1920x1080
-# apply any windi css classes to the current slide
 class: 'text-center'
-# https://sli.dev/custom/highlighters.html
 highlighter: shiki
-# some information about the slides, markdown enabled
 info: |
   ## Slidev Starter Template
   Presentation slides for developers.
 
   Learn more at [Sli.dev](https://sli.dev)
+fonts:
+  sans: 'Roboto'
+  serif: 'Roboto'
+  mono: 'Fira Code'
 ---
 
-# Welcome to Slidev
+# "How to Structure Your Data" から<br>学ぶ Firestore のデータモデリング
 
-Presentation slides for developers
-
-<div class="pt-12">
-  <span @click="$slidev.nav.next" class="px-2 p-1 rounded cursor-pointer" hover="bg-white bg-opacity-10">
-    Press Space for next page <carbon:arrow-right class="inline"/>
-  </span>
-</div>
+2021-06-23 (水) GDG Saitama LT by Kosuke Saigusa
 
 <a href="https://github.com/slidevjs/slidev" target="_blank" alt="GitHub"
   class="abs-br m-6 text-xl icon-btn opacity-50 !border-none !hover:text-white">
   <carbon-logo-github />
 </a>
 
-<!--
-The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
--->
+---
+
+## 自己紹介
+
+- @KosukeSaigusa (GitHub, Twitter, Qiita, Zenn)
+- 1995 年生まれ 26 歳
+- 都内の漫画を販売する会社で Flutter エンジニアとして勤務
+- Django/Python の バックエンド、Nuxt.js/Vue.js の Web フロントエンドのタスクも
+- フルタイムでエンジニアとして働くようになったのは 2021 年の 3 月から
+- 学生時代は機械振動学の研究に従事。C, Fortran で数値計算、Python で機械学習・深層学習なども
+- 卒業後は友人と医療系 SaaS の会社を創業、次第にコードは書かずに PO, PM の役割へ
+- いろいろあって退社、やっぱり自分で手を動かすエンジニアでいたい！と思い、現在の会社へ転職
+- Firebase は個人アプリや友人とのプロジェクトの範囲で好んで触ってきた
+
+エンジニアとしての経験はまだまだですが、エンジニアのコミュニティ活動・OSS 活動の考え方にとても共感しており、LT にもチャレンジしてみることにしました！
 
 ---
 
-# What is Slidev?
+## 背景
 
-Slidev is a slides maker and presenter designed for developers, consist of the following features
+いくつか個人開発や友人とのプロジェクトで、Cloud Firestore を用いてアプリをリリースしてみたが、より良いデータモデリングをきちんと勉強していなかった。
 
-- 📝 **Text-based** - focus on the content with Markdown, and then style them later
-- 🎨 **Themable** - theme can be shared and used with npm packages
-- 🧑‍💻 **Developer Friendly** - code highlighting, live coding with autocompletion
-- 🤹 **Interactive** - embedding Vue components to enhance your expressions
-- 🎥 **Recording** - built-in recording and camera view
-- 📤 **Portable** - export into PDF, PNGs, or even a hostable SPA
-- 🛠 **Hackable** - anything possible on a webpage
+Firebase 公式の "How to Structure Your Data" から学んだ内容をまとめる LT とします！
 
-<br>
-<br>
-
-Read more about [Why Slidev?](https://sli.dev/guide/why)
-
-<!--
-You can have `style` tag in markdown to override the style for the current page.
-Learn more: https://sli.dev/guide/syntax#embedded-styles
--->
-
-<style>
-h1 {
-  background-color: #2B90B6;
-  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
-  background-size: 100%;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  -webkit-text-fill-color: transparent; 
-  -moz-text-fill-color: transparent;
-}
-</style>
-
----
-
-# Navigation
-
-Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/navigation.html)
-
-### Keyboard Shortcuts
-
-|     |     |
-| --- | --- |
-| <kbd>right</kbd> / <kbd>space</kbd>| next animation or slide |
-| <kbd>left</kbd>  / <kbd>shift</kbd><kbd>space</kbd> | previous animation or slide |
-| <kbd>up</kbd> | previous slide |
-| <kbd>down</kbd> | next slide |
-
-<!-- https://sli.dev/guide/animations.html#click-animations -->
-<img
-  v-click
-  class="absolute -bottom-9 -left-7 w-80 opacity-50"
-  src="https://sli.dev/assets/arrow-bottom-left.svg"
-/>
-<p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">Here!</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/haMOUb3KVSo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---
 layout: image-right
 image: https://source.unsplash.com/collection/94734566/1920x1080
 ---
 
-# Code
+## 対象にするアプリ
 
-Use code snippets and get the highlighting directly[^1]!
+レストランのレビューアプリ（食べログとか Retty みたいな）
+
+- 一般ユーザーは、レストランを探したり、レビューを見たり、書いたり、レストランをお気に入りに登録したりする
+- レストランのユーザーは、自分のレストランの情報を編集する
+
+---
+
+## 今日学べること
+
+1. レビューデータはどこに保存するべきか<br>• サブコレクション vs. トップレベルコレクション<br>• パフォーマンスが良いのはどちら？ / セキュリティルールを書きやすいのはどちら？<br>
+2. Cloud Firestore でリレーションを表現する方法<br>• サーバサイドジョインとクライアントサイドジョイン / N + 1 問題<br>• 非正規化を活用する
+3. 権限管理のための情報を保存する<br>• User ID の漏洩は大丈夫？<br>• 機密レベルの異なるフィールドを混在させない原則
+4. Cloud Firestore で N 対 N のリレーション<br>• お気に入りのレストランに★マークを付ける<br>•「私のお気に入りレストラン一覧」を表示する<br>• レストランが日本料理屋からハンバーガー屋に変わったらどうする...？<br>（Cloud Functions のバックグラウンド関数）
+
+---
+layout: image-right
+image: https://source.unsplash.com/collection/94734566/1920x1080
+---
+
+## Code
 
 ```ts {all|2|1-6|9|all}
 interface User {
@@ -118,10 +92,6 @@ function updateUser(id: number, update: User) {
 }
 ```
 
-<arrow v-click="3" x1="400" y1="420" x2="230" y2="330" color="#564" width="3" arrowSize="1" />
-
-[^1]: [Learn More](https://sli.dev/guide/syntax.html#line-highlighting)
-
 <style>
 .footnotes-sep {
   margin-top: 3em;
@@ -133,7 +103,7 @@ function updateUser(id: number, update: User) {
 
 ---
 
-# Components
+## Components
 
 <div grid="~ cols-2 gap-4">
 <div>
@@ -168,7 +138,7 @@ Check out [the guides](https://sli.dev/builtin/components.html) for more.
 class: px-20
 ---
 
-# Themes
+## Themes
 
 Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
 
@@ -199,7 +169,7 @@ check out the [Awesome Themes Gallery](https://sli.dev/themes/gallery.html).
 preload: false
 ---
 
-# Animations
+## Animations
 
 Animations are powered by [@vueuse/motion](https://motion.vueuse.org/).
 
@@ -273,7 +243,7 @@ const final = {
 
 ---
 
-# LaTeX
+## LaTeX
 
 LaTeX is supported out-of-box powered by [KaTeX](https://katex.org/).
 
@@ -301,7 +271,7 @@ $$
 
 ---
 
-# Diagrams
+## Diagrams
 
 You can create diagrams / graphs from textual descriptions, directly in your Markdown.
 
@@ -330,6 +300,6 @@ layout: center
 class: text-center
 ---
 
-# Learn More
+## Learn More
 
 [Documentations](https://sli.dev) / [GitHub Repo](https://github.com/slidevjs/slidev)
