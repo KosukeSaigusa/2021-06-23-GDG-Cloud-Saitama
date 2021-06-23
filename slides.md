@@ -23,7 +23,7 @@ fonts:
 
 ## 自己紹介
 
-- @KosukeSaigusa (GitHub, Twitter, Qiita, Zenn)
+- @KosukeSaigusa ([GitHub](https://github.com/KosukeSaigusa), [Twitter](https://twitter.com/KosukeSaigusa), [Qiita](https://qiita.com/KosukeSaigusa))
 - 1995 年生まれ 26 歳
 - 都内の漫画を販売する会社で Flutter エンジニアとして勤務
 - Django/Python の バックエンド、Nuxt.js/Vue.js の Web フロントエンドのタスクも
