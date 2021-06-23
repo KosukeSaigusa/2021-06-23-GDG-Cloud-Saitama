@@ -1,6 +1,7 @@
 ---
 theme: default
-background: https://source.unsplash.com/collection/94734566/1920x1080
+# background: https://source.unsplash.com/collection/94734566/1920x1080
+background: https://images.unsplash.com/photo-1621112943521-775623b0f651?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=1080&ixid=MnwxfDB8MXxyYW5kb218fHx8fHx8fHwxNjI0Mzc0Nzg2&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1920
 class: 'text-center'
 highlighter: shiki
 info: |
@@ -18,11 +19,6 @@ fonts:
 
 2021-06-23 (水) GDG Saitama LT by Kosuke Saigusa
 
-<a href="https://github.com/slidevjs/slidev" target="_blank" alt="GitHub"
-  class="abs-br m-6 text-xl icon-btn opacity-50 !border-none !hover:text-white">
-  <carbon-logo-github />
-</a>
-
 ---
 
 ## 自己紹介
@@ -37,7 +33,7 @@ fonts:
 - いろいろあって退社、やっぱり自分で手を動かすエンジニアでいたい！と思い、現在の会社へ転職
 - Firebase は個人アプリや友人とのプロジェクトの範囲で好んで触ってきた
 
-エンジニアとしての経験はまだまだですが、エンジニアのコミュニティ活動・OSS 活動の考え方にとても共感しており、LT にもチャレンジしてみることにしました！
+エンジニアとしての経験はまだまだですが、エンジニアの**コミュニティ活動・OSS 活動の考え方に共感**しており、LT にもチャレンジしてみることにしました！
 
 ---
 
@@ -50,18 +46,6 @@ Firebase 公式の "How to Structure Your Data" から学んだ内容をまと�
 <iframe width="560" height="315" src="https://www.youtube.com/embed/haMOUb3KVSo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---
-layout: image-right
-image: https://source.unsplash.com/collection/94734566/1920x1080
----
-
-## 対象にするアプリ
-
-レストランのレビューアプリ（食べログとか Retty みたいな）
-
-- 一般ユーザーは、レストランを探したり、レビューを見たり、書いたり、レストランをお気に入りに登録したりする
-- レストランのユーザーは、自分のレストランの情報を編集する
-
----
 
 ## 今日学べること
 
@@ -72,234 +56,342 @@ image: https://source.unsplash.com/collection/94734566/1920x1080
 
 ---
 layout: image-right
-image: https://source.unsplash.com/collection/94734566/1920x1080
+image: /images/restaurant-list.png
 ---
 
-## Code
+## 対象にするアプリ
 
-```ts {all|2|1-6|9|all}
-interface User {
-  id: number
-  firstName: string
-  lastName: string
-  role: string
+レストランのレビューアプリ
+
+- 一般ユーザーは、レストランを探したり、レビューを見たり、書いたり、レストランをお気に入りに登録したりする
+- レストランのユーザーは、自分のレストランの情報を編集する
+
+---
+
+## レビューデータはどこに保存するべきか？
+
+候補 1：レストランドキュメントの **Array や Map のフィールド**に保存する
+
+- レストランドキュメントを取得した時点で、レビューが既に取得できている
+- 「東京にある日本料理レストランのレビュースコア TOP 10」のようなクエリは発行できない
+- 「サービス全体の最新のレビュー 10 件」のようなクエリも発行できない
+
+```json
+"<restaurant ID（ドキュメント）>": {
+  "name": "割烹メジャーリーグ",
+  "address": "東京都新宿区1-2-3",
+  "category": "日本料理",
+  "averageScore": 4.7,
+  "reviews": [
+    {
+      "name": "大谷翔平",
+      "score": 5,
+      "content": "ランチの焼き魚定食が絶品です！..."
+    },
+    {
+      "name": "ダルビッシュ有",
+      "score": 4,
+      "content": "旬の魚を刺し身にして出してくれます..."
+    }
+  ]
 }
-
-function updateUser(id: number, update: User) {
-  const user = getUser(id)
-  const newUser = {...user, ...update}  
-  saveUser(id, newUser)
-}
 ```
 
-<style>
-.footnotes-sep {
-  margin-top: 3em;
-}
-.footnote-backref {
-  display: none
-}
-</style>
-
 ---
 
-## Components
+## レビューデータはどこに保存するべきか？
 
-<div grid="~ cols-2 gap-4">
-<div>
+候補 2：レストランドキュメントの**サブコレクション**に保存する
 
-You can use Vue components directly inside your slides.
+- レストラン–レビューの 1:N のリレーションが直感的に表現できる
+- CollectionGroup クエリを使えば「東京にある日本料理レストランのレビュースコア TOP 10」や「サービス全体の最新のレビュー 10 件」のようなクエリも実現できる
+- ネストされた子のドキュメントに対するセキュリティルールは、その親のドキュメントに対する読み書きを許すかどうかの条件を引き継げるので記述が楽になる
 
-We have provided a few built-in components like `<Tweet/>` and `<Youtube/>` that you can use directly. And adding your custom components is also super easy.
-
-```html
-<Counter :count="10" />
-```
-
-<!-- ./components/Counter.vue -->
-<Counter :count="10" m="t-4" />
-
-Check out [the guides](https://sli.dev/builtin/components.html) for more.
-
-</div>
-<div>
-
-```html
-<Tweet id="1390115482657726468" />
-```
-
-<Tweet id="1390115482657726468" scale="0.65" />
-
-</div>
-</div>
-
-
----
-class: px-20
----
-
-## Themes
-
-Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
-
-<div grid="~ cols-2 gap-2" m="-t-2">
-
-```yaml
----
-theme: default
----
-```
-
-```yaml
----
-theme: seriph
----
-```
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true">
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true">
-
-</div>
-
-Read more about [How to use a theme](https://sli.dev/themes/use.html) and
-check out the [Awesome Themes Gallery](https://sli.dev/themes/gallery.html).
-
----
-preload: false
----
-
-## Animations
-
-Animations are powered by [@vueuse/motion](https://motion.vueuse.org/).
-
-```html
-<div
-  v-motion
-  :initial="{ x: -80 }"
-  :enter="{ x: 0 }">
-  Slidev
-</div>
-```
-
-<div class="w-60 relative mt-6">
-  <div class="relative w-40 h-40">
-    <img
-      v-motion
-      :initial="{ x: 800, y: -100, scale: 1.5, rotate: -50 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-square.png"
-    />
-    <img
-      v-motion
-      :initial="{ y: 500, x: -100, scale: 2 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-circle.png"
-    />
-    <img
-      v-motion
-      :initial="{ x: 600, y: 400, scale: 2, rotate: 100 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-triangle.png"
-    />
-  </div>
-
-  <div 
-    class="text-5xl absolute top-14 left-40 text-[#2B90B6] -z-1"
-    v-motion
-    :initial="{ x: -80, opacity: 0}"
-    :enter="{ x: 0, opacity: 1, transition: { delay: 2000, duration: 1000 } }">
-    Slidev
-  </div>
-</div>
-
-<!-- vue script setup scripts can be directly used in markdown, and will only affects current page -->
-<script setup lang="ts">
-const final = {
-  x: 0,
-  y: 0,
-  rotate: 0,
-  scale: 1,
-  transition: {
-    type: 'spring',
-    damping: 10,
-    stiffness: 20,
-    mass: 2
+```json
+"<restaurant ID（ドキュメント）>": {
+  "name": "割烹メジャーリーグ",
+  "address": "東京都新宿区1-2-3",
+  "category": "日本料理",
+  "averageScore": 4.7,
+  "<reviews（サブコレクション）>": {
+    "<review ID（ドキュメント）>": {
+      "name": "大谷翔平",
+      "score": 5,
+      "content": "ランチの焼き魚定食が絶品です！..."
+    },
+    // ...
   }
 }
-</script>
-
-<div
-  v-motion
-  :initial="{ x:35, y: 40, opacity: 0}"
-  :enter="{ y: 0, opacity: 1, transition: { delay: 3500 } }">
-
-[Learn More](https://sli.dev/guide/animations.html#motion)
-
-</div>
-
----
-
-## LaTeX
-
-LaTeX is supported out-of-box powered by [KaTeX](https://katex.org/).
-
-<br>
-
-Inline $\sqrt{3x-1}+(1+x)^2$
-
-Block
-$$
-\begin{array}{c}
-
-\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &
-= \frac{4\pi}{c}\vec{\mathbf{j}}    \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \\
-
-\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \\
-
-\nabla \cdot \vec{\mathbf{B}} & = 0
-
-\end{array}
-$$
-
-<br>
-
-[Learn more](https://sli.dev/guide/syntax#latex)
-
----
-
-## Diagrams
-
-You can create diagrams / graphs from textual descriptions, directly in your Markdown.
-
-<div class="grid grid-cols-2 gap-10 pt-4 -mb-6">
-
-```mermaid {scale: 0.9}
-sequenceDiagram
-    Alice->John: Hello John, how are you?
-    Note over Alice,John: A typical interaction
 ```
 
-```mermaid {theme: 'neutral', scale: 0.8}
-graph TD
-B[Text] --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
+---
+
+## レビューデータはどこに保存するべきか？
+
+候補 3：**トップレベルコレクション**に保存する
+
+- レストラン–レビューの 1:N リレーションは、レビュードキュメントのフィールドにレファレンスを持たせることで実現する
+- たとえばトップレベルの 300 万件のレビューの中から、特定のレストランのレファレンスをもつレビュードキュメントを取得する時間的コストは、サブコレクションの場合と大して変わらない
+- 当然「東京にある日本料理レストランのレビュースコア TOP 10」や「サービス全体の最新のレビュー 10 件」を取得するクエリは容易に発行できる
+
+```json
+"<reviews（トップレベルコレクション）>": {
+  "<review ID（ドキュメント）>": {
+    "<review ID（ドキュメント）>": {
+      "restaurantRef": "/restaurants/{restaurant ID}",
+      "name": "大谷翔平",
+      "score": 5,
+      "content": "ランチの焼き魚定食が絶品です！"
+    },
+    // ...
+  }
+}
 ```
 
-</div>
-
-[Learn More](https://sli.dev/guide/syntax.html#diagrams)
-
-
----
-layout: center
-class: text-center
 ---
 
-## Learn More
+## サブコレクション vs. トップレベルコレクション
 
-[Documentations](https://sli.dev) / [GitHub Repo](https://github.com/slidevjs/slidev)
+- CollectionGroup クエリが実装される前は、トップレベルコレクションに実現できるクエリの観点で優位性があった
+- セキュリティルールの記述については、サブコレクションに分がある
+- "How to Structure Your Data" の動画では「**どちらもあり得る**」という結論
+
+---
+
+## クライアントサイドジョインとサーバサイドジョイン
+
+あるレストランの詳細画面に、そのレストランの最新のレビュー 10 件が表示されているとすると...
+
+- 元のレストランドキュメント 1 個に加えて、レビュードキュメントを 10 個読み取る必要がある
+- RDB のサーバサイドで行う結合は Cloud Firestore にはないので、**クライアントサイドジョイン**を活用していく
+- Cloud Firestore のクエリは十分高速だとされているが、いわゆる **N + 1 問題** のような状況が生じることになる（必ずしも深刻なことではない）
+
+SQL で結合
+
+```sql
+SELECT * FROM review
+INNER JOIN restaurant ON review.restaurant_id = restaurant.id;
+WHERE review.restaurant_id = "{レストランの ID}"
+```
+
+Django で `select_related`
+
+```python
+reviews = Review.objects.all().select_related('restaurant')
+for review in reviews:
+  print(f'レビューのタイトル：{review.title}, レストラン名：{review.restaurant.name}')
+```
+
+---
+
+## 非正規化の活用を検討する
+
+- **あえて重複したデータを持たせる**ことで、レファレンス型のリレーションによる読み取り回数を抑える
+- 非正規化して冗長に持たせるデータは、レビューの全情報でなくても良い
+- **アプリケーションのユースケースや、アプリケーションが提供したい体験から判断する**
+- 一括更新は Cloud Functions のバックグラウンド関数で実現できる
+
+```json
+"<restaurant ID（ドキュメント）>": {
+  "name": "割烹メジャーリーグ",
+  "address": "東京都新宿区1-2-3",
+  "category": "日本料理",
+  "averageScore": 4.7,
+  "reviews": [
+    {
+      "reviewRef": "/reviews/{review ID}",
+      "name": "大谷翔平",
+      "title": "ランチの焼き魚定食が絶品です！",
+      "score": 5
+    },
+    // ...
+  ] 
+}
+```
+
+---
+
+## アクセス権限のような情報を保存する
+
+「他のユーザーと何かを共同編集する」ようなアプリでは、誰がそれを閲覧・編集できるかという権限情報を保存しておく必要があるが、Cloud Firestore ではどうする？
+
+- レストランのレビューアプリで言えば、レストランの管理者ユーザーが、同僚・部下ユーザーの何人かに限定して、レストラン情報の編集を許可するようなユースケース
+- セキュリティルールによって、特定のドキュメントにアクセスできるユーザーを制御できる
+- Array や Map で保存する？
+
+```json
+"<restaurant ID（ドキュメント）>": {
+  "name": "割烹メジャーリーグ",
+  "address": "東京都新宿区1-2-3",
+  "category": "日本料理",
+  // ...
+  "role": {
+    "{user-1 ID}": "オーナー",
+    "{user-2 ID}": "編集者",
+    "{user-3 ID}": "編集者",
+  }
+}
+```
+
+---
+
+## データの機密レベルとUser ID の漏洩
+
+権限情報をレストランドキュメントに直接保存するとすれば、通常のユーザーがそのレストラン名や住所を取得するときに、権限情報の Array や Map も一緒に取得されてしまう
+
+- つまり、全ユーザーにそれらのレストランユーザーの User ID が漏洩するので、ちょっと気持ち悪い
+- User ID はそのアプリ上でしか使わないユニークなもので、User ID から個人を特定するような心配は**あまりない**
+- セキュリティルールをフィールドごとに設定することは不可能 →「**機密レベルの異なるデータを同一ドキュメントに保存してはならないという原則**」を守る<br>例：ユーザーの表示名と、メールアドレスや住所を同じドキュメントに保存してはならない
+
+```json
+"<restaurant ID（ドキュメント）>": {
+  // ... 全ユーザーに公開するフィールド
+  "<privateData（サブコレクション）>": {
+    "roles": {
+      "{user-1 ID}": "オーナー",
+      "{user-2 ID}": "編集者",
+      "{user-3 ID}": "編集者",
+    },
+    // ... アクセス権限を絞るべきその他の秘匿情報
+  }
+}
+```
+
+---
+
+## お気に入りのレストランを保存する
+
+ユーザーがお気に入りのレストランを保存しておく機能はどう実現するか？
+
+- あるユーザーは複数のレストランをお気に入りに登録することができる
+- あるレストランは複数のユーザーからお気に入りにされることがある
+
+いわゆる N:N のリレーションシップ。
+
+Cloud Firestore のような NoSQL のデータベースでは度々問題になることがある。
+
+---
+
+## お気に入りのレストランを保存する
+
+候補 1：ユーザードキュメントの Array フィールドに、お気に入りのレストラン ID を保存する
+
+- お気に入りの登録や解除の書き込みは簡単
+- ユーザー情報を取得しておけば、レストラン一覧画面で、お気に入りに登録済みのレストランに★マークをつけておくようなユースケースも満たせる
+- 「私のお気に入りレストラン一覧」を表示するのに、お気に入りのレストランの数だけ、レストラン ID を取得するクエリを発行する必要がある（クライアントサイドジョイン, N + 1 問題）
+- または Cloud Functions の Callable functions を使う？
+
+
+```json
+"<users（コレクション）>": {
+  "<user ID（ドキュメント）>": {
+    // ...
+    "favoriteRestaurantRefs": [
+      "/restaurants/{restaurant-1 ID}",
+      "/restaurants/{restaurant-2 ID}",
+      "/restaurants/{restaurant-3 ID}"
+    ]
+  }
+}
+```
+
+---
+
+## お気に入りのレストランを保存する
+
+候補 2：ユーザードキュメントに「私のお気に入りレストラン一覧」を表示するのに必要なデータを予め持たせておく
+
+- 「私のお気に入りのレストラン一覧」を表示するために必要な情報を非正規化データとして Map で保持しておく（全情報でなくて良い）
+- 個別のレストランを詳しく見たくなったら、レファレンスから個別のレストランドキュメントを取得すれば良い
+
+```json
+"<user ID>（ドキュメント）": {
+  // ...
+  "favoriteRestaurants": {
+    "<restaurant-1 ID（ドキュメント）>": {
+      "restaurantRef": "/restaurants/{restaurant-1 ID}",
+      "name": "割烹メジャーリーグ",
+      "address": "東京都新宿区1-2-3",
+      "category": "日本料理",
+    },
+    // ...
+  }
+}
+```
+
+---
+
+## お気に入りのレストランを保存する
+
+候補 2：ユーザードキュメントに「私のお気に入りレストラン一覧」を表示するのに必要なデータを予め持たせておく
+
+- レストランのカテゴリーが、いつの間にか日本料理からハンバーガー屋さんになっていたらどうする？
+- レストランドキュメントの変更を検知して Cloud Functions で一括更新する
+- 1 MB のドキュメントサイズやフィールド数 20,000 までの上限があるので、一人のユーザーがお気に入りに登録しておけるレストランの数に上限を設けておくと良いかもしれない
+
+```ts {5-8}
+export const onUpdateRestaurant = functions.region('asia-northeast')
+    .firestore.document('restaurants/{restaurantID}')
+    .onUpdate(async (change) => {
+        const restaurant = change.after
+        const users = await admin.firestore()
+                      .collection('users')
+                      .where('favoriteRestaurants.restaurant_1', '>', '')
+                      .get()
+        for (const user of users.docs) {
+            batch.update(user.ref, {
+                'favoriteRestaurants.restaurant_1.category': restaurant.get('category'),
+            })
+        }
+        await batch.commit()
+    })
+```
+
+---
+
+## お気に入りのレストランを保存する
+
+候補 3：トップレベルコレクションに全ユーザーのお気に入りレストランを保存する
+
+- ユーザー、レストランに対する参照に加え、非正規化データとして「私のお気に入りのレストラン一覧」の画面に必要な情報を持たせておく
+- あるユーザーで絞り込んで「私のお気に入りのレストラン一覧」を取得するのも容易
+- あるレストランで絞り込んで「こんな人がこのレストランをお気に入りにしました」といったクエリも容易
+- レストランのカテゴリーが変わった際にも、非正規化データの一括更新は Cloud Functions のバックグラウンド関数で対応可能
+
+```json
+"<favoriteRestaurants（トップレベルコレクション）>": {
+  "<favorite-1 ID（ドキュメント）>": {
+    "userRef": "/users/{userID}",
+    "restaurantRef": "/restaurants/{restaurantID}",
+    "name": "割烹メジャーリーグ",
+    "category": "日本料理",
+    "address": "東京都新宿区 1-2-3"
+  },
+  // ...
+}
+```
+
+---
+
+## まとめ
+
+LT を聴く前よりも、次のようなキーワードに対する知識や感覚は磨かれましたか？
+
+- サブコレクション vs. トップレベルコレクション
+- 読み込み回数が少なくなる設計、クエリがシンプルになる設計、セキュリティルールを書きやすい設計
+- Cloud Firestore でリレーションを表現する方法（Array や Map、サブコレクション、レファレンス）
+- クライアントサイドジョイン、非正規化の活用、N + 1 問題
+- 機密レベルの異なるフィールドを混在させない原則、User ID の漏洩
+- N 対 N のリレーション、Cloud Functions のバックグラウンド関数
+
+
+アプリケーションのユースケースや、保守管理、開発者が許容できること・できないことなどを考慮して、Cloud Firestore のより良いデータモデリングを考えていきましょう 🧑‍💻
+
+---
+
+素敵な機会をありがとうございました！
+
+- [GitHub (@KosukeSaigusa)](https://github.com/KosukeSaigusa)
+- [Twitter (@KosukeSaigusa)](https://twitter.com/kosukesaigusa)
+- [Firebase 公式動画から『Firestore の DB 設計の基礎』を学ぶ](https://qiita.com/KosukeSaigusa/items/860b5a2a6a02331d07cb)
+- [Firestore Security Rules の書き方と守るべき原則](https://qiita.com/KosukeSaigusa/items/18217958c581eac9b245)
