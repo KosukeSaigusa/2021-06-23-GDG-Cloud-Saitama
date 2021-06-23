@@ -1,11 +1,11 @@
 # 2021-06-23 (水) GDG Cloud Saitama LT
 
-To start the slide show:
+"How to Structure Your Data" から学ぶ Firestore のデータモデリング
 
-- `npm install`
-- `npm run dev`
-- visit <http://localhost:3030>
+LT 登壇資料 ([Sidev](https://sli.dev/))
 
-Edit the [slides.md](./slides.md) to see the changes.
+[![Netlify Status](https://api.netlify.com/api/v1/badges/de32455a-6b91-4556-9052-4a22fd42efc4/deploy-status)](https://app.netlify.com/sites/xenodochial-jackson-945709/deploys)
 
-Learn more about Slidev on [documentations](https://sli.dev/).
+Web ブラウザで閲覧する場合は下記のリンクよりアクセスしてください。
+
+<https://gdg-cloud-saitama-lt-2021-06-23.netlify.app/>
